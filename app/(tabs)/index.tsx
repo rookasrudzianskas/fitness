@@ -1,28 +1,53 @@
 //@ts-nocheck
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
+import {Camera, CameraPermissionStatus, useCameraDevices} from 'react-native-vision-camera';
 
 const TabOneScreen = () => {
-  const [cameraPermission, setCameraPermission] = useState<CameraPermissionStatus>();
-  const [microphonePermission, setMicrophonePermission] = useState<CameraPermissionStatus>();
+  const [cameraPermissionStatus, setCameraPermissionStatus] = useState<CameraPermissionStatus>('not-determined');
+  const [microphonePermissionStatus, setMicrophonePermissionStatus] = useState<CameraPermissionStatus>('not-determined');
 
-  useEffect(() => {
-    Camera.getCameraPermissionStatus().then(setCameraPermission);
-    Camera.getMicrophonePermissionStatus().then(setMicrophonePermission);
+  const requestMicrophonePermission = useCallback(async () => {
+    console.log('Requesting microphone permission...');
+    const permission = await Camera.requestMicrophonePermission();
+    console.log(`Microphone permission status: ${permission}`);
+
+    if (permission === 'denied') console.warn('Microphone permissions denied');
+    setMicrophonePermissionStatus(permission);
   }, []);
 
-  console.log(`Re-rendering Navigator. Camera: ${cameraPermission} | Microphone: ${microphonePermission}`);
+  const requestCameraPermission = useCallback(async () => {
+    console.log('Requesting camera permission...');
+    const permission = await Camera.requestCameraPermission();
+    console.log(`Camera permission status: ${permission}`);
 
-  if (cameraPermission == null || microphonePermission == null) {
-    // still loading
-    return null;
-  }
+    if (permission === 'denied') console.warn('Camera permissions denied');
+    setCameraPermissionStatus(permission);
+  }, []);
+
+  useEffect(() => {
+    if (cameraPermissionStatus === 'granted' && microphonePermissionStatus === 'granted') console.log('Ready to go!');
+  }, [cameraPermissionStatus, microphonePermissionStatus]);
+
+  const devices = useCameraDevices()
+  const device = devices.back
+
+  if (device == null) return <></>
+
   return (
     <View>
-      <Text>
-        byrookas 🚀
+      <Text onPress={requestCameraPermission}>
+        Video Grant
       </Text>
+
+      <Text onPress={requestMicrophonePermission}>
+        Microphone Grant
+      </Text>
+      <Camera
+        style={StyleSheet.absoluteFill}
+        device={device}
+        isActive={true}
+      />
     </View>
   );
 };
