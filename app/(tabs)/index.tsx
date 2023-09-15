@@ -35,7 +35,9 @@ const TabOneScreen = () => {
   if (device == null) return <></>
 
   return (
-    <View>
+    <View style={{
+      flex: 1,
+    }}>
       <Text style={{color: 'white', text: 40}} onPress={requestCameraPermission}>
         Video Grant
       </Text>
@@ -47,6 +49,9 @@ const TabOneScreen = () => {
         style={StyleSheet.absoluteFill}
         device={device}
         isActive={true}
+        orientation="portrait"
+        frameProcessorFps={15}
+        zoom={20.0}
       />
     </View>
   );
