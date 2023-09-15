@@ -74,6 +74,7 @@ export default function TabOneScreen() {
   const [error, setError] = useState<string>("")
 
   useEffect(() => {
+    console.log(Camera.getAvailableCameraDevices())
     const requestCameraPermission = async () => {
       try {
         const granted = await PermissionsAndroid.request(
@@ -110,9 +111,9 @@ export default function TabOneScreen() {
 
     return (
       <Camera
-        style={StyleSheet.absoluteFill}
         device={device}
         isActive={true}
+        style={{ width: 500, height: 500 }}
       />
     )
   }
