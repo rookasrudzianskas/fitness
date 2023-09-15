@@ -30,13 +30,13 @@ const TabOneScreen = () => {
   }, [cameraPermissionStatus, microphonePermissionStatus]);
 
   const devices = useCameraDevices()
-  const device = devices.back
+  const device = devices.front
 
   if (device == null) return <></>
 
   return (
     <View>
-      <Text onPress={requestCameraPermission}>
+      <Text style={{color: 'white', text: 40}} onPress={requestCameraPermission}>
         Video Grant
       </Text>
 
