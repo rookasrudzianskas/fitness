@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import 'react-native-reanimated';
 import {Dimensions, Platform, StyleSheet, useWindowDimensions} from 'react-native';
 import {Camera, useFrameProcessor, useCameraDevices} from 'react-native-vision-camera';
@@ -8,6 +8,7 @@ import Animated from 'react-native-reanimated';
 import Svg, {Line} from 'react-native-svg';
 import 'react-native-reanimated';
 import {useFrameCallback} from 'react-native-reanimated';
+import { CameraPermissionStatus } from 'react-native-vision-camera';
 
 const AnimatedLine = Animated.createAnimatedComponent(Line);
 
@@ -59,6 +60,23 @@ export default function TabOneScreen() {
 
   const shoulderToShoulderPosition = usePosition(pose, 'leftShoulder', 'rightShoulder');
   const hipToHipPosition = usePosition(pose, 'leftHip', 'rightHip');
+
+  const [cameraPermission, setCameraPermission] = useState<CameraPermissionStatus>();
+  const [microphonePermission, setMicrophonePermission] = useState<CameraPermissionStatus>();
+
+  useEffect(() => {
+    Camera.getCameraPermissionStatus().then(setCameraPermission);
+    Camera.getMicrophonePermissionStatus().then(setMicrophonePermission);
+  }, []);
+
+  console.log(`Re-rendering Navigator. Camera: ${cameraPermission} | Microphone: ${microphonePermission}`);
+
+  if (cameraPermission == null || microphonePermission == null) {
+    // still loading
+    return null;
+  }
+
+  const showPermissionsPage = cameraPermission !== 'granted' || microphonePermission === 'not-determined';
 
   const dimensions = useWindowDimensions();
 
